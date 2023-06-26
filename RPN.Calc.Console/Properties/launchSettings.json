@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RPN.Calc.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "-e \"5 2 + 7 +\""
+    }
+  }
+}

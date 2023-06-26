@@ -1,4 +1,6 @@
-﻿namespace RPN_Calc.Lib;
+﻿using System.Text;
+
+namespace RPN_Calc.Lib;
 
 public sealed class RPN : IDisposable
 {
@@ -12,10 +14,21 @@ public sealed class RPN : IDisposable
     /// </summary>
     private Dictionary<string, string> Vars { get; set; }
 
+    /// <summary>
+    /// <para>Debug info about the stack.</para>
+    /// </summary>
+    public string? StackDumpInfo { get; set; }
+    /// <summary>
+    /// <para>Debug info about temporary variables.</para>
+    /// </summary>
+    public string? VarDumpInfo { get; set; }
+
     public RPN()
     {
-        Stack = new Stack<string>();
-        Vars = new();       
+        Stack = new();
+        Vars = new();
+        StackDumpInfo = "STACK:\n";
+        VarDumpInfo = "TEMP VARS:\n";
     }
 
     /// <summary>
@@ -27,14 +40,23 @@ public sealed class RPN : IDisposable
     /// <para>Inserts a value at the top of <see cref="Stack"/>.</para>
     /// </summary>
     /// <param name="value">The value to push onto <see cref="Stack"/>.</param>
-    public void Push(string value) =>
+    public void Push(string value)
+    {
         Stack.Push(value);
+        StackDump();
+        VarDump();
+    }
 
     /// <summary>
     /// <para>Removes the first entry from <see cref="Stack"/> and returns said value.</para>
     /// </summary>
     /// <returns>First entry from <see cref="Stack"/> after its removal.</returns>
-    public string Pop() => Stack.Pop();
+    public string Pop() 
+    {
+        StackDump();
+        VarDump();
+        return Stack.Pop();
+    }
 
     /// <summary>
     /// <para>Adds the first two values on <see cref="Stack"/> and
@@ -42,8 +64,8 @@ public sealed class RPN : IDisposable
     /// </summary>
     public void Add()
     {
-        double x = double.Parse(Stack.Pop());
-        double y = double.Parse(Stack.Pop());
+        double x = double.Parse(Pop());
+        double y = double.Parse(Pop());
         double result = x + y;
         Stack.Push(result.ToString());
     }
@@ -55,8 +77,8 @@ public sealed class RPN : IDisposable
     /// </summary>
     public void Sub()
     {
-        double x = double.Parse(Stack.Pop());
-        double y = double.Parse(Stack.Pop());
+        double x = double.Parse(Pop());
+        double y = double.Parse(Pop());
         double result = y - x;
         Stack.Push(result.ToString());
     }
@@ -67,8 +89,8 @@ public sealed class RPN : IDisposable
     /// </summary>
     public void Mul()
     {
-        double x = double.Parse(Stack.Pop());
-        double y = double.Parse(Stack.Pop());
+        double x = double.Parse(Pop());
+        double y = double.Parse(Pop());
         double result = x * y;
         Stack.Push(result.ToString());
     }
@@ -80,16 +102,16 @@ public sealed class RPN : IDisposable
     /// </summary>
     public void Div()
     {
-        double x = double.Parse(Stack.Pop());
-        double y = double.Parse(Stack.Pop());
+        double x = double.Parse(Pop());
+        double y = double.Parse(Pop());
         double result = y / x;
         Stack.Push(result.ToString());
     }
 
     public void Exponent()
     {
-        double baseVal = double.Parse(Stack.Pop());
-        double power = double.Parse(Stack.Pop());
+        double baseVal = double.Parse(Pop());
+        double power = double.Parse(Pop());
         double result = Math.Pow(baseVal, power);
         Stack.Push(result.ToString());
     }
@@ -106,12 +128,33 @@ public sealed class RPN : IDisposable
     /// <summary>
     /// <para>Prints the contents of <see cref="Stack"/> to standard output.</para>
     /// </summary>
-    public void Dump()
+    public void StackDump()
     {
-        if (!Stack.Any())
-            Console.WriteLine("Nothing to show!");
-        foreach (string item in Stack)
-            Console.WriteLine(item);
+        if (Stack.Any())
+        {
+            StringBuilder sb = new();
+            sb.Append("{\n");
+            foreach ((string value, int index) in Stack.WithIndex())
+                sb.Append($"  Stack[{index}] = {value}\n");
+            sb.Append("}\n");
+            StackDumpInfo = StackDumpInfo += sb.ToString();
+        }
+    }
+
+    /// <summary>
+    /// <para>Prints the contents of <see cref="Vars"/> to standard output.</para>
+    /// </summary>
+    public void VarDump()
+    {
+        if (Vars.Any())
+        {
+            StringBuilder sb = new();
+            sb.Append("{\n");
+            foreach ((string key, string value) in Vars)
+                sb.Append($"  Key: {key} = {value}");
+            sb.Append("}\n");
+            VarDumpInfo = VarDumpInfo += sb.ToString();
+        }
     }
 
     /// <summary>
@@ -158,18 +201,25 @@ public sealed class RPN : IDisposable
             Console.WriteLine("Nothing to parse!");
             return;
         }
-        
+
         // Iterate over the expression array created above.
         foreach (string token in tokens)
         {
             if (double.TryParse(token, out double result))
-                Stack.Push(result.ToString());
+            {
+                if (tokens.Last() == result.ToString())
+                    throw new Exception("Last item needs to be an operator!");
+                else
+                    Stack.Push(result.ToString());
+            }
             else
             {
                 if (token == "x" || token == "X") // Exchange top of stack
                     Exchange();
                 else if (token == "?") // Dump the stack to console.
-                    Dump();
+                    StackDump();
+                else if (token == "&") // Dump temp vars to console.
+                    VarDump();
                 else if (token == "+")
                     Add();
                 else if (token == "-")
