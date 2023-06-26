@@ -1,11 +1,6 @@
 ﻿using CommandLine;
 using CommandLine.Text;
 using RPN_Calc.Lib;
-using Serilog;
-
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateLogger();
 
 Parser parser = new(with => with.HelpWriter = null);
 ParserResult<CommandLineOptions> parserResult = parser.ParseArguments<CommandLineOptions>(args);
@@ -27,8 +22,6 @@ static void Run(CommandLineOptions options)
 {
     try
     {
-        if (options.Verbose)
-            Log.Information("Verbose logging enabled.\n");
         if (string.IsNullOrEmpty(options.Expression))
             throw new Exception("Expression is required.");
 
@@ -41,14 +34,12 @@ static void Run(CommandLineOptions options)
             Console.WriteLine(rpn.StackDumpInfo);
         if (rpn.VarDumpInfo.Contains('{'))
             Console.WriteLine(rpn.VarDumpInfo);
+
+        Console.WriteLine($"Expression: \"{options.Expression}\"");
     }
     catch (Exception ex)
     {
-        Log.Error($"{ex.Message}");        
-    }
-    finally
-    {
-        if (options.Verbose)
-            Log.Information($"Expression: \"{options.Expression}\"");
+        Console.Error.WriteLine($"ERROR: {ex.Message}");
+        Environment.Exit(-1);
     }
 }
