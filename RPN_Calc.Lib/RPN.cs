@@ -1,18 +1,18 @@
-﻿namespace Calc.Src;
+﻿namespace RPN_Calc.Lib;
 
-internal sealed class RPN : IDisposable
+public sealed class RPN : IDisposable
 {
     /// <summary>
     /// <para>The main stack. Numbers and operators go here.</para>
     /// </summary>
-    internal Stack<string> Stack { get; set; }
+    private Stack<string> Stack { get; set; }
     /// <summary>
     /// <para>A Dictionary used to hold temporary variables for advanced processing.</para>
     /// <para>Example: <c>Vars.Add(tempVarName, tempVarValue);</c></para>
     /// </summary>
-    internal Dictionary<string, string> Vars { get; set; }
+    private Dictionary<string, string> Vars { get; set; }
 
-    internal RPN()
+    public RPN()
     {
         Stack = new Stack<string>();
         Vars = new();       
@@ -27,20 +27,20 @@ internal sealed class RPN : IDisposable
     /// <para>Inserts a value at the top of <see cref="Stack"/>.</para>
     /// </summary>
     /// <param name="value">The value to push onto <see cref="Stack"/>.</param>
-    internal void Push(string value) =>
+    public void Push(string value) =>
         Stack.Push(value);
 
     /// <summary>
     /// <para>Removes the first entry from <see cref="Stack"/> and returns said value.</para>
     /// </summary>
     /// <returns>First entry from <see cref="Stack"/> after its removal.</returns>
-    internal string Pop() => Stack.Pop();
+    public string Pop() => Stack.Pop();
 
     /// <summary>
     /// <para>Adds the first two values on <see cref="Stack"/> and
     /// pushes the sum to the top of <see cref="Stack"/>.</para>
     /// </summary>
-    internal void Add()
+    public void Add()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -53,7 +53,7 @@ internal sealed class RPN : IDisposable
     /// pushes the difference to the top of <see cref="Stack"/>.</para>
     /// <para>The equation here is <c>Stack[1] - Stack[0]</c> due the stack ordering.</para>
     /// </summary>
-    internal void Sub()
+    public void Sub()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -65,7 +65,7 @@ internal sealed class RPN : IDisposable
     /// <para>Multiplies the first two values on <see cref="Stack"/> and
     /// pushes the result to the top of <see cref="Stack"/>.</para>
     /// </summary>
-    internal void Mul()
+    public void Mul()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -78,7 +78,7 @@ internal sealed class RPN : IDisposable
     /// pushes the result to the top of <see cref="Stack"/>.</para>
     /// <para>The equation here is <c>Stack[1] / Stack[0]</c> due the stack ordering.</para>
     /// </summary>
-    internal void Div()
+    public void Div()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -93,12 +93,12 @@ internal sealed class RPN : IDisposable
     /// </summary>
     /// <returns>The value at the top of <see cref="Stack"/>.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    internal string Peek() => Stack.Peek();
+    public string Peek() => Stack.Peek();
 
     /// <summary>
     /// <para>Prints the contents of <see cref="Stack"/> to standard output.</para>
     /// </summary>
-    internal void Dump()
+    public void Dump()
     {
         if (!Stack.Any())
             Console.WriteLine("Nothing to show!");
@@ -109,13 +109,13 @@ internal sealed class RPN : IDisposable
     /// <summary>
     /// <para>Removes all values from <see cref="Stack"/>.</para>
     /// </summary>
-    internal void Clear() => Stack.Clear();
+    public void Clear() => Stack.Clear();
 
     /// <summary>
     /// <para>Removes all values from <see cref="Stack"/>.</para>
     /// <para>Removes all values from <see cref="Vars"/>.</para>
     /// </summary>
-    internal void Wipe()
+    public void Wipe()
     {
         Clear();
         Vars.Clear();
@@ -126,7 +126,7 @@ internal sealed class RPN : IDisposable
     /// <para>If <see cref="Stack"/> had <c>10, 2</c>, then <see cref="Exchange"/> would change this
     /// to <c>2, 10</c></para>
     /// </summary>
-    internal void Exchange()
+    public void Exchange()
     {
         string t = Stack.Pop();
         string t1 = Stack.Pop();
@@ -138,7 +138,7 @@ internal sealed class RPN : IDisposable
     /// <para>Parses a Reverse Polish Notation Equation and calculates the result.</para>
     /// </summary>
     /// <param name="expression">Equation in RPN format to parse</param>    
-    internal void Parse(string expression)
+    public void Parse(string expression)
     {
         // Break up the expression into an array
         // using a space as the delimiter.

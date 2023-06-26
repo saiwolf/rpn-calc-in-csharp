@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RPN.Calc.Src\RPN.Calc.Src.csproj" />
+    <ProjectReference Include="..\RPN_Calc.Lib\RPN_Calc.Lib.csproj" />
   </ItemGroup>
 
 </Project>

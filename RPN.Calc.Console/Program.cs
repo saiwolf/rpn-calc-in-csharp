@@ -1,4 +1,4 @@
-﻿using Calc.Src;
+﻿using RPN_Calc.Lib;
 
 if (args.Length == 1)
 {
