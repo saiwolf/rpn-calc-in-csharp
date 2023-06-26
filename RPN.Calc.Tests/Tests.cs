@@ -13,7 +13,15 @@ public class Tests
     }
 
     [Test]
-    public void ManualOperations()
+    public void ExponentNotationParsing()
+    {
+        using RPN rpn = new();
+        rpn.Parse("5 5 ^ 125 - 30 /"); // (5+2) - (-3) + 10 = 20        
+        Assert.That(rpn.Peek(), Is.EqualTo("100"));
+    }
+
+    [Test]
+    public void ManualAddition()
     {
         using RPN rpn = new();
         rpn.Push("10"); // Push '10' to the top of the stack.
@@ -22,6 +30,16 @@ public class Tests
         Assert.That(rpn.Peek(), Is.EqualTo("99"));
         rpn.Add(); // 99 + 10 = 109 ('99' is at the top of the stack, followed by '10')
         Assert.That(rpn.Peek(), Is.EqualTo("109"));
+    }
+
+    [Test]
+    public void ManualPowerRaising()
+    {
+        using RPN rpn = new();
+        rpn.Push("5");
+        rpn.Push("5");
+        rpn.Exponent();
+        Assert.That(rpn.Peek(), Is.EqualTo("3125"));
     }
 
     [Test]

@@ -86,6 +86,14 @@ public sealed class RPN : IDisposable
         Stack.Push(result.ToString());
     }
 
+    public void Exponent()
+    {
+        double baseVal = double.Parse(Stack.Pop());
+        double power = double.Parse(Stack.Pop());
+        double result = Math.Pow(baseVal, power);
+        Stack.Push(result.ToString());
+    }
+
     /// <summary>
     /// <para>
     /// Returns the value at the top of <see cref="Stack"/> without removing it.
@@ -178,6 +186,8 @@ public sealed class RPN : IDisposable
                     Mul();
                 else if (token == "/")
                     Div();
+                else if (token == "^")
+                    Exponent();
                 else if (token[0] == '!')
                     Vars.Add(token[1..], Peek()); // Store top of stack in tempVar
                 else if (token[0] == '@')
