@@ -1,45 +1,25 @@
-﻿using CommandLine;
-using CommandLine.Text;
-using RPN_Calc.Lib;
+﻿using RPN_Calc.Lib;
 
-Parser parser = new(with => with.HelpWriter = null);
-ParserResult<CommandLineOptions> parserResult = parser.ParseArguments<CommandLineOptions>(args);
-parserResult
-  .WithParsed(Run)
-  .WithNotParsed(_ => DisplayHelp(parserResult));
-
-static void DisplayHelp<T>(ParserResult<T> result)
+try
 {
-    var helpText = HelpText.AutoBuild(result, h =>
-    {
-        h.AdditionalNewLineAfterOption = false;
-        return HelpText.DefaultParsingErrorsHandler(result, h);
-    }, e => e);
-    Console.WriteLine(helpText);
+    if (string.IsNullOrEmpty(args[0]))
+        throw new Exception("Expression is required.");
+    if (args.Length > 1)
+        throw new Exception("Only one expression is allowed at a time.");
+
+    RPN rpn = new();
+    rpn.Parse(args[0]);
+    Console.WriteLine($"Result: {rpn.Peek()}");
+
+    if (rpn.StackDumpInfo.Contains('{'))
+        Console.WriteLine(rpn.StackDumpInfo);
+    if (rpn.VarDumpInfo.Contains('{'))
+        Console.WriteLine(rpn.VarDumpInfo);
+
+    Console.WriteLine($"Expression: \"{args[0]}\"");
 }
-
-static void Run(CommandLineOptions options)
+catch (Exception ex)
 {
-    try
-    {
-        if (string.IsNullOrEmpty(options.Expression))
-            throw new Exception("Expression is required.");
-
-
-        RPN rpn = new();
-        rpn.Parse(options.Expression);
-        Console.WriteLine($"Result: {rpn.Peek()}");
-
-        if (rpn.StackDumpInfo.Contains('{'))
-            Console.WriteLine(rpn.StackDumpInfo);
-        if (rpn.VarDumpInfo.Contains('{'))
-            Console.WriteLine(rpn.VarDumpInfo);
-
-        Console.WriteLine($"Expression: \"{options.Expression}\"");
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"ERROR: {ex.Message}");
-        Environment.Exit(-1);
-    }
+    Console.Error.WriteLine($"ERROR: {ex.Message}");
+    Environment.Exit(-1);
 }
