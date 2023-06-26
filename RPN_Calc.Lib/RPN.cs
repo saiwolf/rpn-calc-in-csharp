@@ -17,11 +17,11 @@ public sealed class RPN : IDisposable
     /// <summary>
     /// <para>Debug info about the stack.</para>
     /// </summary>
-    public string? StackDumpInfo { get; set; }
+    public string StackDumpInfo { get; set; }
     /// <summary>
     /// <para>Debug info about temporary variables.</para>
     /// </summary>
-    public string? VarDumpInfo { get; set; }
+    public string VarDumpInfo { get; set; }
 
     public RPN()
     {

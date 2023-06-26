@@ -32,19 +32,14 @@ static void Run(CommandLineOptions options)
         if (string.IsNullOrEmpty(options.Expression))
             throw new Exception("Expression is required.");
 
-        if (options.DumpStack)
-            options.Expression += (" ?");
-        if (options.DumpVar)
-            options.Expression += (" &");
-
 
         RPN rpn = new();
         rpn.Parse(options.Expression);
         Console.WriteLine($"Result: {rpn.Peek()}");
 
-        if (options.DumpStack)
+        if (rpn.StackDumpInfo.Contains('{'))
             Console.WriteLine(rpn.StackDumpInfo);
-        if (options.DumpVar)
+        if (rpn.VarDumpInfo.Contains('{'))
             Console.WriteLine(rpn.VarDumpInfo);
     }
     catch (Exception ex)
