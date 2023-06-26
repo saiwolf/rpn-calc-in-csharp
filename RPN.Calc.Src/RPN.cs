@@ -1,6 +1,6 @@
 ﻿namespace Calc.Src;
 
-internal class RPN
+internal sealed class RPN : IDisposable
 {
     /// <summary>
     /// <para>The main stack. Numbers and operators go here.</para>
@@ -17,6 +17,8 @@ internal class RPN
         Stack = new Stack<string>();
         Vars = new();       
     }
+
+    public void Dispose() => Wipe();
 
     /// <summary>
     /// <para>Inserts a value at the top of <see cref="Stack"/>.</para>
