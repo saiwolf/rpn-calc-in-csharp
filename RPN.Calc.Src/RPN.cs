@@ -18,6 +18,9 @@ internal sealed class RPN : IDisposable
         Vars = new();       
     }
 
+    /// <summary>
+    /// <para>Clears both <see cref="Stack"/> and <see cref="Vars"/> on Dispose.</para>
+    /// </summary>
     public void Dispose() => Wipe();
 
     /// <summary>
