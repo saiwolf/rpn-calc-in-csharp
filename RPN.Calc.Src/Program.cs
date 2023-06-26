@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Calc.Src;
+
+if (args.Length == 1)
+{
+    RPN rpn = new();
+    rpn.Parse(args[0]);
+    Console.WriteLine(rpn.Peek());
+}
+else
+    Console.WriteLine("Help text goes here.");
