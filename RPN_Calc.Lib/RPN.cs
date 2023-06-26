@@ -162,17 +162,9 @@ public sealed class RPN : IDisposable
         // Iterate over the expression array created above.
         foreach (string token in tokens)
         {
-            try
-            {
-                // Attempt to parse `token` as a number/double.
-                // If it succeeds, push it to the stack.
-                // We take advantage of `double.Parse()` throwing
-                // a `FormatExcpetion`, so we can differentiate between
-                // numbers and operators.
-                double value = double.Parse(token);
-                Stack.Push(value.ToString());
-            }
-            catch (FormatException) // `token` is not a number, perhaps an operator?
+            if (double.TryParse(token, out double result))
+                Stack.Push(result.ToString());
+            else
             {
                 if (token == "x" || token == "X") // Exchange top of stack
                     Exchange();
