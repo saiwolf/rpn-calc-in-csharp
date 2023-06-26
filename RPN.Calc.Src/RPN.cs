@@ -2,21 +2,40 @@
 
 internal class RPN
 {
-    internal Stack<string> Stack {  get; set; }
+    /// <summary>
+    /// <para>The main stack. Numbers and operators go here.</para>
+    /// </summary>
+    internal Stack<string> Stack { get; set; }
+    /// <summary>
+    /// <para>A Dictionary used to hold temporary variables for advanced processing.</para>
+    /// <para>Example: <c>Vars.Add(tempVarName, tempVarValue);</c></para>
+    /// </summary>
     internal Dictionary<string, string> Vars { get; set; }
 
-    public RPN()
+    internal RPN()
     {
         Stack = new Stack<string>();
         Vars = new();       
     }
 
-    public void Push(string value) =>
+    /// <summary>
+    /// <para>Inserts a value at the top of <see cref="Stack"/>.</para>
+    /// </summary>
+    /// <param name="value">The value to push onto <see cref="Stack"/>.</param>
+    internal void Push(string value) =>
         Stack.Push(value);
 
-    public string Pop() => Stack.Pop();
+    /// <summary>
+    /// <para>Removes the first entry from <see cref="Stack"/> and returns said value.</para>
+    /// </summary>
+    /// <returns>First entry from <see cref="Stack"/> after its removal.</returns>
+    internal string Pop() => Stack.Pop();
 
-    public void Add()
+    /// <summary>
+    /// <para>Adds the first two values on <see cref="Stack"/> and
+    /// pushes the sum to the top of <see cref="Stack"/>.</para>
+    /// </summary>
+    internal void Add()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -24,7 +43,12 @@ internal class RPN
         Stack.Push(result.ToString());
     }
 
-    public void Sub()
+    /// <summary>
+    /// <para>Subtracts the first two values on <see cref="Stack"/> and
+    /// pushes the difference to the top of <see cref="Stack"/>.</para>
+    /// <para>The equation here is <c>Stack[1] - Stack[0]</c> due the stack ordering.</para>
+    /// </summary>
+    internal void Sub()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -32,7 +56,11 @@ internal class RPN
         Stack.Push(result.ToString());
     }
 
-    public void Mul()
+    /// <summary>
+    /// <para>Multiplies the first two values on <see cref="Stack"/> and
+    /// pushes the result to the top of <see cref="Stack"/>.</para>
+    /// </summary>
+    internal void Mul()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -40,7 +68,12 @@ internal class RPN
         Stack.Push(result.ToString());
     }
 
-    public void Div()
+    /// <summary>
+    /// <para>Divides the first two values on <see cref="Stack"/> and
+    /// pushes the result to the top of <see cref="Stack"/>.</para>
+    /// <para>The equation here is <c>Stack[1] / Stack[0]</c> due the stack ordering.</para>
+    /// </summary>
+    internal void Div()
     {
         double x = double.Parse(Stack.Pop());
         double y = double.Parse(Stack.Pop());
@@ -48,25 +81,47 @@ internal class RPN
         Stack.Push(result.ToString());
     }
 
-    public string Peek() => Stack.Peek();
+    /// <summary>
+    /// <para>
+    /// Returns the value at the top of <see cref="Stack"/> without removing it.
+    /// </para>
+    /// </summary>
+    /// <returns>The value at the top of <see cref="Stack"/>.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    internal string Peek() => Stack.Peek();
 
-    public void Dump()
+    /// <summary>
+    /// <para>Prints the contents of <see cref="Stack"/> to standard output.</para>
+    /// </summary>
+    internal void Dump()
     {
         if (!Stack.Any())
-            throw new Exception("Nothing to show!");
+            Console.WriteLine("Nothing to show!");
         foreach (string item in Stack)
             Console.WriteLine(item);
     }
 
-    public void Clear() => Stack.Clear();
+    /// <summary>
+    /// <para>Removes all values from <see cref="Stack"/>.</para>
+    /// </summary>
+    internal void Clear() => Stack.Clear();
 
-    public void Wipe()
+    /// <summary>
+    /// <para>Removes all values from <see cref="Stack"/>.</para>
+    /// <para>Removes all values from <see cref="Vars"/>.</para>
+    /// </summary>
+    internal void Wipe()
     {
         Clear();
         Vars.Clear();
     }
 
-    public void Exchange()
+    /// <summary>
+    /// <para>Exchanges the position of the first two values on <see cref="Stack"/>.</para>
+    /// <para>If <see cref="Stack"/> had <c>10, 2</c>, then <see cref="Exchange"/> would change this
+    /// to <c>2, 10</c></para>
+    /// </summary>
+    internal void Exchange()
     {
         string t = Stack.Pop();
         string t1 = Stack.Pop();
@@ -74,23 +129,41 @@ internal class RPN
         Stack.Push(t1);
     }
 
-    public void Parse(string expression)
+    /// <summary>
+    /// <para>Parses a Reverse Polish Notation Equation and calculates the result.</para>
+    /// </summary>
+    /// <param name="expression">Equation in RPN format to parse</param>    
+    internal void Parse(string expression)
     {
+        // Break up the expression into an array
+        // using a space as the delimiter.
         string[] tokens = expression.Split(' ');
-        if (tokens.Length == 0) throw new Exception("Nothing to parse!");
+        // If there are no tokens, then print a message
+        // abort.
+        if (tokens.Length == 0)
+        {
+            Console.WriteLine("Nothing to parse!");
+            return;
+        }
         
+        // Iterate over the expression array created above.
         foreach (string token in tokens)
         {
             try
             {
+                // Attempt to parse `token` as a number/double.
+                // If it succeeds, push it to the stack.
+                // We take advantage of `double.Parse()` throwing
+                // a `FormatExcpetion`, so we can differentiate between
+                // numbers and operators.
                 double value = double.Parse(token);
                 Stack.Push(value.ToString());
             }
-            catch (FormatException)
+            catch (FormatException) // `token` is not a number, perhaps an operator?
             {
-                if (token == "x" || token == "X")
+                if (token == "x" || token == "X") // Exchange top of stack
                     Exchange();
-                else if (token == "?")
+                else if (token == "?") // Dump the stack to console.
                     Dump();
                 else if (token == "+")
                     Add();
@@ -101,10 +174,10 @@ internal class RPN
                 else if (token == "/")
                     Div();
                 else if (token[0] == '!')
-                    Vars.Add(token[1..], Peek());
+                    Vars.Add(token[1..], Peek()); // Store top of stack in tempVar
                 else if (token[0] == '@')
-                    Push(Vars[token[1..]] ?? string.Empty);
-                else
+                    Push(Vars[token[1..]] ?? string.Empty); // Retrieve tempVar and push it to the stack
+                else // `token` did not match, so it's invalid.
                     throw new Exception($"Unknown operator or number: `{token}`");
             }
         }
