@@ -16,7 +16,7 @@ public class Tests
     public void ExponentNotationParsing()
     {
         using RPN rpn = new();
-        rpn.Parse("5 5 ^ 125 - 30 /"); // (5+2) - (-3) + 10 = 20        
+        rpn.Parse("5 5 ^ 125 - 30 /"); // (((5^5) - 125) / 30) = 100
         Assert.That(rpn.Peek(), Is.EqualTo("100"));
     }
 
